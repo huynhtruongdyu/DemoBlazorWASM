@@ -1,11 +1,20 @@
 ﻿@page "/"
+@inject IThemeProvider themeProvider;
 
 <PageTitle>Index</PageTitle>
-<ButtonComponent Title="Click me!" OnClickEvent="@onBtnPress" Classes="btn-danger"/>
+<ButtonComponent Title="Default" OnClickEvent="@onBtnPress" Classes="btn-danger"/>
+<ButtonComponent Title="Dark" OnClickEvent="@onBtnPress" Classes="btn-danger" />
+<h2 style="color:@current.Primary">Color</h2>
 
 @code{
+    private ITheme current = new DefaultTheme();
+
     public void onBtnPress()
     {
-        Console.WriteLine("aas");
+        if (current is DefaultTheme)
+            current = new DarkTheme();
+        else
+            current = new DefaultTheme();
+        Console.WriteLine(current.Primary);
     }
 }
