@@ -1,5 +1,6 @@
 ﻿@page "/"
-@inject IThemeProvider themeProvider;
+@inject IThemeProvider themeProvider
+@implements IDisposable
 
 <PageTitle>Index</PageTitle>
 <ButtonComponent Title="Default" OnClickEvent="@onBtnPress" Classes="btn-danger"/>
@@ -7,14 +8,29 @@
 <h2 style="color:@current.Primary">Color</h2>
 
 @code{
-    private ITheme current = new DefaultTheme();
+    private ITheme current;
+    protected override void OnInitialized()
+    {
+        themeProvider.ThemeChangesEvent += () => OnThemeChange();
+        current = themeProvider.GetCurrentTheme();
+    }
 
     public void onBtnPress()
     {
         if (current is DefaultTheme)
-            current = new DarkTheme();
+            themeProvider.ChangesTheme(EnumThemes.Dark);
         else
-            current = new DefaultTheme();
+            themeProvider.ChangesTheme(EnumThemes.Default);
         Console.WriteLine(current.Primary);
+    }
+
+    private void OnThemeChange()
+    {
+        current = themeProvider.GetCurrentTheme();
+    }
+
+    public void Dispose()
+    {
+        themeProvider.ThemeChangesEvent -= () => OnThemeChange();
     }
 }

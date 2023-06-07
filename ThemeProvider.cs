@@ -1,4 +1,5 @@
-﻿using DemoBlazorWASM.Themes;
+﻿using DemoBlazorWASM.Enums;
+using DemoBlazorWASM.Themes;
 
 namespace DemoBlazorWASM
 {
@@ -6,12 +7,18 @@ namespace DemoBlazorWASM
     {
         ITheme GetCurrentTheme();
 
-        void ChangesTheme(ITheme theme);
+        void ChangesTheme(EnumThemes themes);
+
+        event Action ThemeChangesEvent;
     }
 
     public class ThemeProvider : IThemeProvider
     {
+        public event Action ThemeChangesEvent;
+
         private ITheme _currentTheme;
+
+        private void NotifyThemeChange() => ThemeChangesEvent?.Invoke();
 
         public ThemeProvider()
         {
@@ -23,9 +30,14 @@ namespace DemoBlazorWASM
             return _currentTheme;
         }
 
-        public void ChangesTheme(ITheme theme)
+        public void ChangesTheme(EnumThemes themes)
         {
-            _currentTheme = theme;
+            _currentTheme = themes switch
+            {
+                EnumThemes.Dark => new DarkTheme(),
+                _ => new DefaultTheme()
+            };
+            NotifyThemeChange();
         }
     }
 }
